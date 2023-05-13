@@ -1,0 +1,232 @@
+diff --git a/Plugins/SimpleUGC/Source/SimpleUGC/Private/UGCSettings.cpp b/Plugins/SimpleUGC/Source/SimpleUGC/Private/UGCSettings.cpp
+index d3ea3dd6..2b390dd2 100644
+--- a/Plugins/SimpleUGC/Source/SimpleUGC/Private/UGCSettings.cpp
++++ b/Plugins/SimpleUGC/Source/SimpleUGC/Private/UGCSettings.cpp
+@@ -53 +53 @@ UUGCSettings::UUGCSettings() {
+-    this->slot3.AddDefaulted(41);
++    this->slot3.AddDefaulted(39);
+@@ -54,0 +55 @@ UUGCSettings::UUGCSettings() {
++    this->slot4.AddDefaulted(26);
+@@ -56 +57 @@ UUGCSettings::UUGCSettings() {
+-    this->SelectedSlot = 4;
++    this->SelectedSlot = 1;
+diff --git a/Source/FSD/Private/CarvedResourceData.cpp b/Source/FSD/Private/CarvedResourceData.cpp
+index 65f94dea..d76ffc90 100644
+--- a/Source/FSD/Private/CarvedResourceData.cpp
++++ b/Source/FSD/Private/CarvedResourceData.cpp
+@@ -6,0 +7,8 @@ UCarvedResourceCreator* UCarvedResourceData::LoadResourceCreator() const {
++float UCarvedResourceData::GetUnitsPerCarver() const {
++    return 0.0f;
++}
++
++float UCarvedResourceData::GetTargetAmount(AProceduralSetup* pls) const {
++    return 0.0f;
++}
++
+diff --git a/Source/FSD/Private/FSDGameUserSettings.cpp b/Source/FSD/Private/FSDGameUserSettings.cpp
+index 9e27a916..3cdb825c 100644
+--- a/Source/FSD/Private/FSDGameUserSettings.cpp
++++ b/Source/FSD/Private/FSDGameUserSettings.cpp
+@@ -655 +655 @@ UFSDGameUserSettings::UFSDGameUserSettings() {
+-    this->ServerSearchPasswordRequired = false;
++    this->ServerSearchPasswordRequired = true;
+@@ -658 +658 @@ UFSDGameUserSettings::UFSDGameUserSettings() {
+-    this->volumeMaster = 0.10f;
++    this->volumeMaster = 27.47f;
+@@ -660 +660 @@ UFSDGameUserSettings::UFSDGameUserSettings() {
+-    this->volumeMusic = 71.30f;
++    this->volumeMusic = 58.38f;
+diff --git a/Source/FSD/Private/HeliumTank.cpp b/Source/FSD/Private/HeliumTank.cpp
+new file mode 100644
+index 00000000..69f1f02a
+--- /dev/null
++++ b/Source/FSD/Private/HeliumTank.cpp
+@@ -0,0 +1,24 @@
++#include "HeliumTank.h"
++#include "Net/UnrealNetwork.h"
++
++void AHeliumTank::OnUsedBy(APlayerCharacter* User, EInputKeys Key) {
++}
++
++void AHeliumTank::OnShoutStarted(APlayerCharacter* Player, UAudioComponent* audio) {
++}
++
++void AHeliumTank::OnRep_PitchedUsers() {
++}
++
++void AHeliumTank::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
++    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
++    
++    DOREPLIFETIME(AHeliumTank, PitchedUsers);
++    DOREPLIFETIME(AHeliumTank, Leader);
++}
++
++AHeliumTank::AHeliumTank() {
++    this->PitchCurve = NULL;
++    this->Leader = NULL;
++}
++
+diff --git a/Source/FSD/Private/PitchedUsers.cpp b/Source/FSD/Private/PitchedUsers.cpp
+new file mode 100644
+index 00000000..03826fbc
+--- /dev/null
++++ b/Source/FSD/Private/PitchedUsers.cpp
+@@ -0,0 +1,7 @@
++#include "PitchedUsers.h"
++
++FPitchedUsers::FPitchedUsers() {
++    this->Player = NULL;
++    this->Timer = 0.00f;
++}
++
+diff --git a/Source/FSD/Private/ProceduralResources.cpp b/Source/FSD/Private/ProceduralResources.cpp
+index e706585b..69fd2f86 100644
+--- a/Source/FSD/Private/ProceduralResources.cpp
++++ b/Source/FSD/Private/ProceduralResources.cpp
+@@ -5,0 +6,6 @@ void UProceduralResources::GenerateResources() {
++void UProceduralResources::GenerateMissingCarvedResources_Async(AProceduralSetup*& setup, FLatentActionInfo LatentInfo) {
++}
++
++void UProceduralResources::GenerateMissingCarvedResources() {
++}
++
+@@ -14,0 +21,6 @@ void UProceduralResources::CreateResourcesFromObjectives() {
++void UProceduralResources::CountGeneratedCarvedResources() {
++}
++
++void UProceduralResources::CountFinalGeneratedCarvedResources() {
++}
++
+diff --git a/Source/FSD/Private/VeinResourceData.cpp b/Source/FSD/Private/VeinResourceData.cpp
+index a107c61d..b8e431a5 100644
+--- a/Source/FSD/Private/VeinResourceData.cpp
++++ b/Source/FSD/Private/VeinResourceData.cpp
+@@ -6,0 +7,4 @@ UTerrainMaterial* UVeinResourceData::GetTerrainMaterial() const {
++float UVeinResourceData::GetDesiredAmount(AProceduralSetup* pls) const {
++    return 0.0f;
++}
++
+diff --git a/Source/FSD/Public/CarvedResourceData.h b/Source/FSD/Public/CarvedResourceData.h
+index 17716fb3..90baf23a 100644
+--- a/Source/FSD/Public/CarvedResourceData.h
++++ b/Source/FSD/Public/CarvedResourceData.h
+@@ -5,0 +6 @@
++class AProceduralSetup;
+@@ -23,0 +25,6 @@ public:
++    UFUNCTION(BlueprintCallable, BlueprintPure)
++    float GetUnitsPerCarver() const;
++    
++    UFUNCTION(BlueprintCallable, BlueprintPure)
++    float GetTargetAmount(AProceduralSetup* pls) const;
++    
+diff --git a/Source/FSD/Public/CommunicationComponent.h b/Source/FSD/Public/CommunicationComponent.h
+index 1cb1ac49..4c83857f 100644
+--- a/Source/FSD/Public/CommunicationComponent.h
++++ b/Source/FSD/Public/CommunicationComponent.h
+@@ -7 +6,0 @@
+-#include "AudioCallbackDelegate.h"
+@@ -76,3 +74,0 @@ protected:
+-    UPROPERTY(BlueprintAssignable, BlueprintReadWrite, EditAnywhere, meta=(AllowPrivateAccess=true))
+-    FAudioCallback ShoutCallback;
+-    
+diff --git a/Source/FSD/Public/HeliumTank.h b/Source/FSD/Public/HeliumTank.h
+new file mode 100644
+index 00000000..4db0aacb
+--- /dev/null
++++ b/Source/FSD/Public/HeliumTank.h
+@@ -0,0 +1,42 @@
++#pragma once
++#include "CoreMinimal.h"
++#include "GameFramework/Actor.h"
++#include "EInputKeys.h"
++#include "PitchedUsers.h"
++#include "HeliumTank.generated.h"
++
++class AHeliumTank;
++class APlayerCharacter;
++class UAudioComponent;
++class UCurveFloat;
++
++UCLASS(Blueprintable)
++class AHeliumTank : public AActor {
++    GENERATED_BODY()
++public:
++protected:
++    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta=(AllowPrivateAccess=true))
++    UCurveFloat* PitchCurve;
++    
++    UPROPERTY(BlueprintReadWrite, EditAnywhere, Transient, ReplicatedUsing=OnRep_PitchedUsers, meta=(AllowPrivateAccess=true))
++    TArray<FPitchedUsers> PitchedUsers;
++    
++    UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Transient, meta=(AllowPrivateAccess=true))
++    AHeliumTank* Leader;
++    
++public:
++    AHeliumTank();
++    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
++    
++protected:
++    UFUNCTION(BlueprintCallable)
++    void OnUsedBy(APlayerCharacter* User, EInputKeys Key);
++    
++    UFUNCTION(BlueprintCallable)
++    void OnShoutStarted(APlayerCharacter* Player, UAudioComponent* audio);
++    
++    UFUNCTION(BlueprintCallable)
++    void OnRep_PitchedUsers();
++    
++};
++
+diff --git a/Source/FSD/Public/PitchedUsers.h b/Source/FSD/Public/PitchedUsers.h
+new file mode 100644
+index 00000000..0cafe25e
+--- /dev/null
++++ b/Source/FSD/Public/PitchedUsers.h
+@@ -0,0 +1,19 @@
++#pragma once
++#include "CoreMinimal.h"
++#include "PitchedUsers.generated.h"
++
++class APlayerCharacter;
++
++USTRUCT(BlueprintType)
++struct FPitchedUsers {
++    GENERATED_BODY()
++public:
++    UPROPERTY(BlueprintReadWrite, EditAnywhere, Transient, meta=(AllowPrivateAccess=true))
++    APlayerCharacter* Player;
++    
++    UPROPERTY(BlueprintReadWrite, EditAnywhere, Transient, meta=(AllowPrivateAccess=true))
++    float Timer;
++    
++    FSD_API FPitchedUsers();
++};
++
+diff --git a/Source/FSD/Public/ProceduralResources.h b/Source/FSD/Public/ProceduralResources.h
+index 6cbf4470..de1723d1 100644
+--- a/Source/FSD/Public/ProceduralResources.h
++++ b/Source/FSD/Public/ProceduralResources.h
+@@ -16,0 +17,6 @@ public:
++    UFUNCTION(BlueprintCallable, meta=(Latent, LatentInfo="LatentInfo"))
++    static void GenerateMissingCarvedResources_Async(AProceduralSetup*& setup, FLatentActionInfo LatentInfo);
++    
++    UFUNCTION(BlueprintCallable)
++    void GenerateMissingCarvedResources();
++    
+@@ -25,0 +32,6 @@ public:
++    UFUNCTION(BlueprintCallable)
++    void CountGeneratedCarvedResources();
++    
++    UFUNCTION(BlueprintCallable)
++    void CountFinalGeneratedCarvedResources();
++    
+diff --git a/Source/FSD/Public/VeinResourceData.h b/Source/FSD/Public/VeinResourceData.h
+index 7d6e7fed..c4a24648 100644
+--- a/Source/FSD/Public/VeinResourceData.h
++++ b/Source/FSD/Public/VeinResourceData.h
+@@ -5,0 +6 @@
++class AProceduralSetup;
+@@ -30,0 +32,3 @@ public:
++    UFUNCTION(BlueprintCallable, BlueprintPure)
++    float GetDesiredAmount(AProceduralSetup* pls) const;
++    
